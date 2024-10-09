@@ -9,6 +9,9 @@
             ReactionTime = reactionTime;
         }
 
-
+        public override double CreateScore()
+        {
+            return SkillLevel * 0.6 + ReactionTime * 0.4;
+        }
     }
 }

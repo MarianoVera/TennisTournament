@@ -1,4 +1,6 @@
-﻿namespace TennisTournament.Models
+﻿using System.Numerics;
+
+namespace TennisTournament.Models
 {
     public class Man : Player
     {
@@ -11,5 +13,9 @@
             Speed = speed;
         }
 
+        public override double CreateScore()
+        {
+            return SkillLevel * 0.6 + Strength * 0.2 + Speed * 0.2;
+        }
     }
 }
