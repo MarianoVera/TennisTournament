@@ -25,7 +25,7 @@ namespace TennisTournament.Services
             {
                 List<Player> winners = new List<Player>();
 
-                for(int i = 0; i < players.Count; i++)
+                for(int i = 0; i < players.Count; i+=2)
                 {
                     Player winner = _match.GetWinner(players[i], players[i+1]);
                     winners.Add(winner);
