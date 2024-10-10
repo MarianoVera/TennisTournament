@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using TennisTournament.Data;
 using TennisTournament.Interfaces;
 using TennisTournament.Services;
 
@@ -10,6 +12,10 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IMatch, Match>();
 builder.Services.AddScoped<ITournament, Tournament>();
+builder.Services.AddScoped<TournamentFactory>();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Conection")));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

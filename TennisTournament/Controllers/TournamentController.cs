@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TennisTournament.Data;
 using TennisTournament.DTO;
 using TennisTournament.Models;
 using TennisTournament.Services;
@@ -9,15 +11,17 @@ namespace TennisTournament.Controllers
     [Route("[controller]")]
     public class TournamentController : ControllerBase
     {
-        private readonly Tournament _tournament;
+        private readonly TournamentFactory _tournamentFactory;
+        private readonly ApplicationDbContext _context;
 
-        public TournamentController(Tournament tournament)
+        public TournamentController(TournamentFactory tournamentFactory, ApplicationDbContext context)
         {
-            _tournament = tournament;
+            _tournamentFactory = tournamentFactory;
+            _context = context;
         }
 
         [HttpPost("simulate")]
-        public IActionResult SimulateTournament([FromBody] List<PlayerDTO> playerDTO)
+        public async Task<IActionResult> SimulateTournamentAsync([FromBody] List<PlayerDTO> playerDTO)
         {
             var players = new List<Player>();
 
@@ -40,15 +44,37 @@ namespace TennisTournament.Controllers
                 players.Add(player);
             }
 
-            var winner = _tournament.PlayTournament(players);
+            var tournament = _tournamentFactory.Create();
+            var winner = tournament.PlayTournament(players);
+
+            var tournamentDTO = new TournamentDTO
+            {
+                Winner = winner.Name,
+                TournamentType = players.Any(p => p is Man) ? "Male" : "Female", 
+                Date = DateTime.Now,
+                Gender = players.Any(p => p is Man) ? "Male" : "Female"
+            };
+
+            _context.TournamentResults.Add(tournamentDTO);
+            await _context.SaveChangesAsync();
+
             return Ok(winner);
         }
 
         [HttpGet("results")]
-        public ActionResult<List<TournamentDTO>> GetTournamentResults(DateTime? date = null, string gender = null)
+        public async Task<ActionResult<List<TournamentDTO>>> GetTournamentResults(DateTime? date = null, string gender = null)
         {
+            var results = await _context.Tournaments
+            .Where(t => !date.HasValue || t.Date.Date == date.Value.Date)
+            .Select(t => new TournamentDTO
+            {
+                Winner = t.Winner, 
+                TournamentType = t.Gender, 
+                Date = t.Date
+            })
+            .ToListAsync();
 
-            return Ok(new List<TournamentDTO>());
+            return Ok(results);
         }
     }
 }

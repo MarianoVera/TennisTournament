@@ -21,7 +21,8 @@ namespace TennisTournament.Tests
 
             mock.Setup(mock => mock.GetWinner(It.IsAny<Player>(), It.IsAny<Player>())).Returns(players[1]);
 
-            var tournament = new Tournament(mock.Object);
+            var tournament = new Tournament();
+            tournament.Match = mock.Object;
 
             //Act
             var winner = tournament.PlayTournament(players);
@@ -42,10 +43,11 @@ namespace TennisTournament.Tests
             };
             
             var mockMatch = new Mock<IMatch>();
-            var tournamentService = new Tournament(mockMatch.Object);
+            var tournament = new Tournament();
+            tournament.Match = mockMatch.Object;
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => tournamentService.PlayTournament(players));
+            Assert.Throws<ArgumentException>(() => tournament.PlayTournament(players));
         }
     }
 

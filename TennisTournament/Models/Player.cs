@@ -2,6 +2,7 @@
 {
     public abstract class Player
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public int SkillLevel { get; set; }
         public string Gender { get; set; }

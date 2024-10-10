@@ -1,17 +1,19 @@
-﻿using TennisTournament.Interfaces;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using TennisTournament.Interfaces;
 using TennisTournament.Models;
 
 namespace TennisTournament.Services
 {
     public class Tournament : ITournament
     {
-        //private List<Player> _players;
-        private IMatch _match;
+        public int Id { get; set; }
+        [NotMapped]
+        public IMatch Match { get; set; }
+        public DateTime Date { get; set; }
+        public string Winner { get; set; }
+        public string Gender { get; set; }
 
-        public Tournament(IMatch match) 
-        { 
-            _match = match;
-        }
+        public Tournament() { }
 
 
         public Player PlayTournament (List<Player> players)
@@ -27,7 +29,7 @@ namespace TennisTournament.Services
 
                 for(int i = 0; i < players.Count; i+=2)
                 {
-                    Player winner = _match.GetWinner(players[i], players[i+1]);
+                    Player winner = Match.GetWinner(players[i], players[i+1]);
                     winners.Add(winner);
                 }
                 players = winners;
